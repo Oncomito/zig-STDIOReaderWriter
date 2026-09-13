@@ -1,0 +1,11 @@
+.{
+    .name = .STDIOReaderWriter,
+    .version = "0.10.0",
+    .minimum_zig_version = "0.16.0",
+    .paths = .{""},
+    .fingerprint = 0xf5c4d2a7fed85d3a,
+    .dependencies = .{ .string = .{
+        .url = "https://github.com/JakubSzark/zig-string/archive/refs/heads/master.tar.gz",
+        .hash = "zig_string-0.10.0-6dpLWvWcAAAHZQHkJGZ1_-yP2cGhXV35rXxKQZ4vx-Dy",
+    } },
+}
