@@ -9,19 +9,21 @@ pub fn build(b: *std.Build) void {
         .target = aim,
         .optimize = opt,
     });
+
     const string = b.dependency("string", .{
         .target = aim,
         .optimize = opt,
     });
     lib.addImport("string", string.module("string"));
 
-    const tests_mod = b.addModule("STDIOReaderWriter", .{
-        .root_source_file = b.path("test.zig"),
+    const tests_mod = b.addModule("STDIOReaderWriterTests", .{
+        .root_source_file = b.path("./test.zig"),
 
         .target = aim,
         .optimize = opt,
     });
     tests_mod.addImport("STDIOReaderWriter", lib);
+
     const tests = b.addTest(.{
         .root_module = tests_mod,
     });

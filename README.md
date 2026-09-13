@@ -13,11 +13,13 @@ Also, it may be useful for others who want to try further improving their Zig kn
 ```zig
 const std = @import("std");
 const STDIOReaderWriter = @import("./STDIOReaderWriter.zig");
+
 // ...
+const io = init.io;
 
 // Create and initialize the ReaderWriter
 var rw: STDIOReaderWriter = undefined;
-rw.init();
+rw.init(io);
 
 // Print into the std.Io.File.stdout()
 try rw.println("Hello World!");
