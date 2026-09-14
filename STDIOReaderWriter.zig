@@ -9,12 +9,11 @@ stdio: Stdio,
 output: Output,
 input: Input,
 
-pub fn init(self: *@This(), io: std.Io) STDIOBuffer {
+pub fn init(self: *@This(), io: std.Io) void {
     self.buffer = .init();
     self.stdio = .init(std.Io.File.Writer.init(std.Io.File.stdout(), io, &self.buffer.stdout), std.Io.File.Reader.init(std.Io.File.stdin(), io, &self.buffer.stdin));
     self.output = .init(&self.stdio.out.interface);
     self.input = .init(&self.stdio.in.interface);
-    return self;
 }
 
 pub fn print(self: @This(), message: []const u8) !void {
