@@ -40,7 +40,7 @@ Add this to your build.zig.zon
 ```zig
 .dependencies = .{
     .STDIOReaderWriter = .{
-        .url = "https://github.com/Oncomito/zig-STDIOReaderWriter/releases/main/master.tar.gz",
+        .url = "https://github.com/Oncomito/zig-STDIOReaderWriter/archive/refs/heads/main.zip",
         // .hash = Suggested by Zig
     }
 }
