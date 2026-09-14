@@ -60,6 +60,7 @@ pub fn scan(self: @This(), buffer: []u8) !void {
 
     if (value.len > buffer.len) return error.InputTooLarge;
 
+    @memset(buffer, 0);
     @memcpy(buffer[0..value.len], value);
 }
 
