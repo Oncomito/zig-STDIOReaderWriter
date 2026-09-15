@@ -8,12 +8,19 @@ buffer: STDIOBuffer,
 stdio: Stdio,
 output: Output,
 input: Input,
+writer: *std.Io.Writer,
+reader: *std.Io.Reader,
 
 pub fn init(self: *@This(), io: std.Io) void {
     self.buffer = .init();
-    self.stdio = .init(std.Io.File.Writer.init(std.Io.File.stdout(), io, &self.buffer.stdout), std.Io.File.Reader.init(std.Io.File.stdin(), io, &self.buffer.stdin));
+    self.stdio = .init(
+        std.Io.File.Writer.init(std.Io.File.stdout(), io, &self.buffer.stdout),
+        std.Io.File.Reader.init(std.Io.File.stdin(), io, &self.buffer.stdin),
+    );
     self.output = .init(&self.stdio.out.interface);
     self.input = .init(&self.stdio.in.interface);
+    self.writer = self.output.writer;
+    self.reader = self.input.reader;
 }
 
 pub fn print(self: @This(), message: []const u8) !void {
@@ -49,14 +56,14 @@ pub fn flush(self: @This()) !void {
 
 pub fn scan_s(self: @This(), variable: *String) !void {
     const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
-    const value = line[0 .. line.len - 1];
+    const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
 
     try variable.*.setStr(value);
 }
 
 pub fn scan(self: @This(), buffer: []u8) !void {
     const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
-    const value: []const u8 = line[0 .. line.len - 1];
+    const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
 
     if (value.len > buffer.len) return error.InputTooLarge;
 
@@ -66,7 +73,7 @@ pub fn scan(self: @This(), buffer: []u8) !void {
 
 pub fn scan_ar(self: @This(), array: *std.ArrayList(u8)) !void {
     const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
-    const value: []const u8 = line[0 .. line.len - 1];
+    const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
 
     try array.clearRetainingCapacity();
     try array.appendSliceBounded(value);
