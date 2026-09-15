@@ -54,11 +54,8 @@ pub fn flush(self: @This()) !void {
     try self.output.writer.flush();
 }
 
-pub fn scan_s(self: @This(), variable: *String) !void {
-    const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
-    const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
-
-    try variable.*.setStr(value);
+pub fn clear(self: @This()) !void {
+    try self.print("\x1B[3J\x1B[H\x1B[2J");
 }
 
 pub fn scan(self: @This(), buffer: []u8) !void {
@@ -71,16 +68,40 @@ pub fn scan(self: @This(), buffer: []u8) !void {
     @memcpy(buffer[0..value.len], value);
 }
 
+pub fn scan_s(self: @This(), variable: *String) !void {
+    const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
+    const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
+
+    try variable.*.setStr(value);
+}
+
 pub fn scan_ar(self: @This(), array: *std.ArrayList(u8)) !void {
     const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
     const value = if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line;
 
-    try array.clearRetainingCapacity();
-    try array.appendSliceBounded(value);
+    try array.*.clearRetainingCapacity();
+    try array.*.appendSliceBounded(value);
 }
 
-//TODO Work on scanf
-// pub fn scanf(self; @This(), )
+pub fn scanAlloc(self: @This(), allocator: std.mem.Allocator) ![]const u8 {
+    const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
+    const value: std.ArrayList(u8) = .empty;
+    defer value.deinit(allocator);
+
+    value.appendSlice(allocator, if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line);
+
+    return value.toOwnedSlice(allocator);
+}
+
+pub fn scanAllocSentinel(self: @This(), allocator: std.mem.Allocator) ![:0]const u8 {
+    const line: []const u8 = try self.input.reader.takeDelimiterInclusive('\n');
+    const value: std.ArrayList(u8) = .empty;
+    defer value.deinit(allocator);
+
+    value.appendSlice(allocator, if (line.len > 0 and line[line.len - 1] == '\n') line[0 .. line.len - 1] else line);
+
+    return value.toOwnedSliceSentinel(allocator, '0');
+}
 
 pub const STDIOBuffer = struct {
     stdout: [1024]u8,
